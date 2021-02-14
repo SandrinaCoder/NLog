@@ -31,6 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System.Linq;
+
 namespace NLog.UnitTests
 {
     using System;
@@ -128,6 +130,18 @@ namespace NLog.UnitTests
             }
 
             Assert.Empty(unusedTypes);
+        }
+
+        [Fact]
+        public void TypesInInternalNamespaceShouldBeInternalTest()
+        {
+            var notInternalTypes = allTypes
+                .Where(t => t.Namespace != null && t.Namespace.Contains(".Internal."))
+                .Where(t => !t.IsNested && (t.IsVisible || t.IsPublic))
+                .Select(t => t.FullName).ToList();
+
+            Assert.Empty(notInternalTypes);
+
         }
 
         private void IncrementUsageCount(Type type)
